@@ -82,9 +82,9 @@ function Todos() {
                 <Button className='w-[17%]'  type='primary' size='large' htmlType='submit'>Add</Button>
             </form>
             <div className='flex mx-auto mt-5 items-center justify-between w-[600px] rounded-lg p-2 bg-slate-800'>
-                <button onClick={() => setCurrentView('all')} className='w-[33%] rounded-lg bg-[#306df110] text-white py-2 hover:opacity-70 duration-300'>All <span>{data.todos.length}</span></button>
-                <button onClick={() => setCurrentView('saved')} className='w-[33%] rounded-lg  bg-[#306df110] text-white hover:opacity-70 duration-300  py-2'>Saved <span>{data.saved.length}</span></button>
-                <button onClick={() => setCurrentView('liked')} className='w-[33%] rounded-lg  bg-[#306df110] text-white  py-2 hover:opacity-70 duration-300'>Liked <span>{data.liked.length}</span></button>
+                <button  onClick={() => setCurrentView('all')} className={`${currentView == 'all' ? "bg-blue-400" : "bg-[#306df110]"} w-[33%] rounded-lg  text-white py-2 hover:opacity-70 duration-300`}>All <span>{data.todos.length}</span></button>
+                <button onClick={() => setCurrentView('saved')} className={`${currentView == 'saved' ? "bg-blue-400" : "bg-[#306df110]"} w-[33%] rounded-lg  bg-[#306df110] text-white hover:opacity-70 duration-300  py-2`}>Saved <span>{data.saved.length}</span></button>
+                <button onClick={() => setCurrentView('liked')} className={`${currentView == 'liked' ? "bg-blue-400" : "bg-[#306df110]"} w-[33%] rounded-lg  bg-[#306df110] text-white  py-2 hover:opacity-70 duration-300`}>Liked <span>{data.liked.length}</span></button>
             </div>
             <ul className='w-[500px]  space-y-2
             uslate-100 rounded-lg mx-auto mt-4'>
