@@ -25,11 +25,6 @@ function reducer(state, action) {
                 saved: state.saved.filter(item => item.id != action.payload),
                 liked: state.liked.filter(item => item.id != action.payload)
             }
-            // return {
-            //     todos: state.todos.filter(todo => todo.id != action.payload),
-            //     saved: state.saved,
-            //     liked: state.liked
-            // }
         case TYPES.save:
             const filteredSaved = state.todos.map(item => item.id === action.payload ? { ...item, isSaved: !item.isSaved } : item)
             return {
