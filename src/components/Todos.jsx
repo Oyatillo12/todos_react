@@ -1,8 +1,9 @@
 import { DeleteOutlined, EditFilled, HeartOutlined } from '@ant-design/icons'
-import { Button, Input } from 'antd'
+import { Button, Input, Segmented } from 'antd'
 import React, { useReducer, useState } from 'react'
 
 import { BlackHeartIcon, HeartIcon, SavedIcon } from '../assets/images/icon';
+import Modal from './Modal';
 
 const TYPES = {
     create: 'CREATE',
@@ -19,6 +20,12 @@ function reducer(state, action) {
                 saved: state.saved,
                 liked: state.liked
             }
+            case TYPES.edit:
+                return {
+                    todos: [...state.todos],
+                    saved: state.saved,
+                    liked: state.liked
+                }
         case TYPES.delete:
             return {
                 todos: state.todos.filter(todo => todo.id != action.payload),
@@ -44,16 +51,17 @@ function reducer(state, action) {
     }
 }
 
+const initialState = {
+    todos: [],
+    saved: [],
+    liked: []
+}
 
 function Todos() {
 
-    
-
-    const initialState = {
-        todos: [],
-        saved: [],
-        liked: []
-    }
+    const [openModal, setOpenModal] = useState(false)
+    const [editTodo, setEditTodo] = useState(null)
+    const [editId, setEditId] = useState(null)
 
     const [data, dispatch] = useReducer(reducer, initialState)
     const [currentView, setCurrentView] = useState("all")
@@ -73,13 +81,30 @@ function Todos() {
         setTodo('')
     }
 
+    function handleEditOpen(id) {
+        setOpenModal(true)
+        const findedTod = data.todos.find(item => item.id === id)
+        setEditTodo(findedTod.title)
+        setEditId(id)
+    }
+
+    function EditSubmit(e) {
+        e.preventDefault()
+        const editedTodo = data.todos.find(item => item.id == editId);
+        console.log(editedTodo);
+        
+        editedTodo.title = editTodo
+        dispatch({ type: TYPES.edit })
+        setOpenModal(false)
+    }
+
 
 
     return (
         <>
             <form autoComplete='off' onSubmit={handleTodoSubmit} className='w-[600px] mx-auto mt-10 bg-slate-800 rounded-lg p-4 flex items-center justify-between'>
-                <Input value={todo} onChange={(e) => setTodo(e.target.value)} className='w-[80%] placeholder:text-slate-300 bg-transparent hover:bg-transparent border-slate-500 focus:bg-transparent text-white' size='large' name='todo' placeholder='Add todo' />
-                <Button className='w-[17%]'  type='primary' size='large' htmlType='submit'>Add</Button>
+                <Input required value={todo} onChange={(e) => setTodo(e.target.value)} className='w-[80%] placeholder:text-slate-300 bg-transparent hover:bg-transparent border-slate-500 focus:bg-transparent text-white' size='large' name='todo' placeholder='Add todo' />
+                <Button className={`w-[17%] ${todo ? "" : "cursor-not-allowed opacity-50"}`}  type='primary' size='large' htmlType='submit'>Add</Button>
             </form>
             <div className='flex mx-auto mt-5 items-center justify-between w-[600px] rounded-lg p-2 bg-slate-800'>
                 <button  onClick={() => setCurrentView('all')} className={`${currentView == 'all' ? "bg-blue-400" : "bg-[#306df110]"} w-[33%] rounded-lg  text-white py-2 hover:opacity-70 duration-300`}>All <span>{data.todos.length}</span></button>
@@ -94,12 +119,18 @@ function Todos() {
                         <div className='flex items-center space-x-4'>
                             <button className='hover:scale-125 duration-300' onClick={() => dispatch({ type: TYPES.like, payload: item.id })}>{item.isLiked ? <HeartIcon/> : <BlackHeartIcon/>} </button>
                             <button  className={`${item.isSaved ? "text-yellow-500" : ""} scale-125 hover:scale-150 duration-300`}  onClick={() => dispatch({ type: TYPES.save, payload: item.id })}><SavedIcon/></button>
-                            <button className='scale-125  hover:scale-150 duration-300'><EditFilled /></button>
+                            <button onClick={() => handleEditOpen(item.id)} className='scale-125  hover:scale-150 duration-300'><EditFilled /></button>
                             <button className='scale-125 hover:scale-150 duration-300 hover:text-red-500' onClick={() => dispatch({ type: TYPES.delete, payload: item.id })}><DeleteOutlined /></button>
                         </div>
                     </li>
                 )) : <li className='mt-5 text-center text-lg text-white'>No {currentView == 'all' ? 'todos' : currentView == 'saved' ? 'saved' : 'liked'} avialable</li>}
             </ul>
+            <Modal closeModal={setOpenModal} openModal={openModal}>
+                <form onSubmit={EditSubmit} autoComplete='off' className='flex items-center justify-between' >
+                    <Input value={editTodo} onChange={(e) => setEditTodo(e.target.value)} className='w-[80%] placeholder:text-slate-300 bg-transparent hover:bg-transparent border-slate-500 focus:bg-transparent text-white' size='large' name='todo' placeholder='Edit todo' />
+                    <Button className='w-[17%]'  type='primary' size='large' htmlType='submit'>Edit</Button>
+                </form>
+            </Modal>
         </>
     )
 }
